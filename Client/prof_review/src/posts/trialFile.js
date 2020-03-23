@@ -1,4 +1,6 @@
 import axios from 'axios';
-export default function f() {
-    return 0
-}
+const f = callback => {
+    axios.get('/api/get/profList')
+        .then(res => callback(res.data))
+};
+export default f;

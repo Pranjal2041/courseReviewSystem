@@ -29,7 +29,8 @@ CREATE TABLE course_reviews (
     rating FLOAT,
     likes INT,
     level FLOAT[] DEFAULT ARRAY[]::FLOAT[],
-    date TIMESTAMP
+    date TIMESTAMP,
+    name VARCHAR(255)
 );
 
 CREATE TABLE professor_reviews (

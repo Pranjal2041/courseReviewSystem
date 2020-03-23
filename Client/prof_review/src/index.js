@@ -1,13 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import { Router, Route, Switch } from "react-router-dom";
+import { createBrowserHistory } from "history";
+
 import App from './App';
+import CourseReviewsPage from "./courseReviewsPage";
 import * as serviceWorker from './serviceWorker';
 
+var hist = createBrowserHistory();
+
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+    <Router history={hist}>
+        <Switch>
+            <Route path="/courses/:title" component={CourseReviewsPage} />
+            <Route path="/" component={App} />
+
+        </Switch>
+    </Router>,
   document.getElementById('root')
 );
 

@@ -100,7 +100,8 @@ function CourseReviewsPage(props) {
         uid: my_uid};
         if(checkIfLikePoss(msg)){
             likeReview(data);
-            addLikeToList(data2)
+            addLikeToList(data2);
+            openCourse(title)
         }
         else
             alert("Already liked")

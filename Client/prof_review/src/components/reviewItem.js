@@ -1,14 +1,17 @@
 import React from "react";
 
-function reviewItem(props) {
+function ReviewItem(props) {
     return(
     <div>
-        <button>Wow</button>
         <p> {props.author + " \t "}</p>
-        <br/>
         <p> {"Rating:- "+props.rating}</p>
         <h6> Review</h6>
         <p> {props.review} </p>
+        <button>UpVote</button>
+        <button>DownVote</button>
+        <br/>
+        <br/>
+
 
 
     </div>
@@ -16,4 +19,4 @@ function reviewItem(props) {
 )
 }
 
-export default reviewItem
+export default ReviewItem

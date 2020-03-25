@@ -28,6 +28,29 @@ router.get('/api/get/courseReview', (req, res, next ) => {
         })
 });
 
+router.put('/api/put/courseRevLike', (req, res, next) => {
+    console.log("and th");
+    const values = [ req.body.rid];
+    pool.query(`UPDATE course_reviews SET likes = likes + 1
+              WHERE rid = $1`, values,
+        (q_err, q_res) => {
+            console.log(q_res);
+            console.log(q_err)
+        })
+});
+
+
+router.put('/api/put/courseRevLikeToList', (req, res, next) => {
+    console.log("and th");
+    const values = [ req.body.rid,req.body.uid];
+    pool.query(`UPDATE course_reviews SET like_user_ids = array_append( like_user_ids , $2)
+              WHERE rid = $1 `, values,
+        (q_err, q_res) => {
+            console.log(q_res);
+            console.log(q_err)
+        })
+});
+
 router.put('/api/put/courseRevEdit', (req, res, next) => {
     console.log("and th");
     const values = [ req.body.rid,

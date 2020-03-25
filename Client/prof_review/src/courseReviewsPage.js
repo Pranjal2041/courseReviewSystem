@@ -21,6 +21,8 @@ import DialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Button from "@material-ui/core/Button/Button";
 import addReview from "./serverConnection/addReview";
 import editReview from "./serverConnection/editReview";
+import likeReview from "./serverConnection/likeReview";
+import addLikeToList from "./serverConnection/addLikeToList";
 
 
 
@@ -29,7 +31,7 @@ function CourseReviewsPage(props) {
 
     const [state,changeState] = useState(null);
     const [dialogOpen,setDialogOpen] =useState(false);
-    const [values,setValues] = useState({review: "",rating: ""});
+    const [values,setValues] = useState({review: "",rating: "",likes: 0});
     const [rid,setRid]=useState(-1);
     const [reviewPresent,changeReviewPresent] =useState(false);
 
@@ -43,7 +45,7 @@ function CourseReviewsPage(props) {
                 result.map(message => {
                     if (message.uid === my_uid) {
 
-                        setValues({review: message.review, rating: message.rating}
+                        setValues({review: message.review, rating: message.rating,likes:message.likes}
 
                         );
                         changeReviewPresent(true);
@@ -92,6 +94,31 @@ function CourseReviewsPage(props) {
         setValues({...values, [id]: value})
     };
 
+    function likeRev(msg) {
+        const data={rid: msg.rid};
+        const data2={rid:msg.rid,
+        uid: my_uid};
+        if(checkIfLikePoss(msg)){
+            likeReview(data);
+            addLikeToList(data2)
+        }
+        else
+            alert("Already liked")
+
+
+    }
+
+    function checkIfLikePoss(msg) {
+        const temp= msg.like_user_ids;
+        let flag=true;
+        for (let i=0; i< temp.length;i++){
+            if(temp[i]===my_uid)
+            {   flag=false;
+                break
+        }}
+        return flag;
+    }
+
     const handleSubmit = (event) => {
         console.log("So we are adding review");
         console.log(values);
@@ -99,7 +126,8 @@ function CourseReviewsPage(props) {
             const data={
                 rid: rid,
                 review: values.review,
-                rating: values.rating
+                rating: values.rating,
+                likes: values.likes
             };
             editReview(data);
             openCourse(title);
@@ -139,7 +167,7 @@ function CourseReviewsPage(props) {
                             }{
                                     checkIfReviewExists()
                                     ? state.map( message => (message.uid===my_uid )?
-                                     <div> <YourReviewItem author={message.uid} review={message.review} rating={message.rating}
+                                     <div> <YourReviewItem author={message.uid} review={message.review} rating={message.rating} likes={message.likes}
                                      /> <button onClick={handleClickOpen}> Edit your review </button> <br/><br/></div>
                                      :null
                                     )
@@ -154,7 +182,10 @@ function CourseReviewsPage(props) {
                             { state
                                 ? state.map( message => (message.uid===my_uid )?
                                      null
-                                    : <ReviewItem author={message.uid} review={message.review} rating={message.rating} />
+                                    :
+                                    <div><ReviewItem author={message.uid} review={message.review} rating={message.rating} likes={message.likes} />
+                                        <button onClick={() => likeRev(message)}>Like</button>
+                                    </div>
                                 )
                                 : null
                             }

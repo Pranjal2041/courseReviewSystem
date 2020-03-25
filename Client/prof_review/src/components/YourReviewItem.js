@@ -11,6 +11,7 @@ function YourReviewItem(props) {
             <h4> Your Review</h4>
             <p> {props.review} </p>
             <p> {"Rating:- "+props.rating}</p>
+            <p> {"Likes:- "+ props.likes}</p>
 
         </div>
 

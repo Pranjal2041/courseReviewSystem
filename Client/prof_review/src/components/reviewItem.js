@@ -7,8 +7,7 @@ function ReviewItem(props) {
         <p> {"Rating:- "+props.rating}</p>
         <h6> Review</h6>
         <p> {props.review} </p>
-        <button>UpVote</button>
-        <button>DownVote</button>
+        <p> {"Likes:- "+props.likes}</p>
         <br/>
         <br/>
 

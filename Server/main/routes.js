@@ -52,15 +52,21 @@ router.put('/api/put/courseRevLikeToList', (req, res, next) => {
 });
 
 router.put('/api/put/courseRevEdit', (req, res, next) => {
-    console.log("and th");
+    console.log("and inside courseRev Edit in routes");
     const values = [ req.body.rid,
         req.body.review,
-        req.body.rating
+        req.body.rating,
+        req.body.level,
+        req.body.prof
     ];
-    pool.query(`UPDATE course_reviews SET review= $2, rating=$3
+    console.log(values);
+    console.log((`UPDATE course_reviews SET review= $2, rating=$3 level=$4
+              WHERE rid = $1`, values));
+    pool.query(`UPDATE course_reviews SET review= $2, rating=$3, level=$4, prof_names=$5
               WHERE rid = $1`, values,
         (q_err, q_res) => {
-            console.log(q_res)
+            console.log("So here I log the errors");
+            console.log(q_res);
             console.log(q_err)
         })
 });
@@ -75,11 +81,12 @@ router.post('/api/post/coursePost', (req, res, next) => {
         req.body.likes,
         req.body.level,
         req.body.name,
-        req.body.username
+        req.body.username,
+        req.body.prof
     ];
-    pool.query(`INSERT INTO course_reviews (cid,uid,review,rating,likes,level,name,user_name,date)
+    pool.query(`INSERT INTO course_reviews (cid,uid,review,rating,likes,level,name,user_name,prof_names,date)
      VALUES
-     ($1,$2,$3,$4,$5,$6,$7,$8, NOW())`,
+     ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW())`,
         values, (q_err, q_res) => {
             if(q_err) return next(q_err);
             res.json(q_res.rows)

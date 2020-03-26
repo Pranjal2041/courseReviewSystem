@@ -5,7 +5,7 @@ function YourReviewItem(props) {
     function openReviewEditor() {
 
     }
-
+    try{
     return(
         <div>
             <h4> Your Review</h4>
@@ -16,7 +16,9 @@ function YourReviewItem(props) {
 
         </div>
 
-    )
+    )}catch (e) {
+    }
+
 }
 
 export default YourReviewItem

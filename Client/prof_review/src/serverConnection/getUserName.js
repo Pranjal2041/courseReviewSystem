@@ -6,4 +6,4 @@ const getUserName = (callback,id) => {
         .then(res => callback(res.data))
 };
 
-export default getUserName()
+export default getUserName

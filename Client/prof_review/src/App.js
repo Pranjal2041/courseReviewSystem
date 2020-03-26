@@ -1,12 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
-import axios from 'axios';
-import f from './posts/trialFile'
 import getAllCourses from "./serverConnection/getData";
-import getReviewsOfCourse from './serverConnection/getCourseReview'
-import Link from '@material-ui/core/Link';
 import TextField from "@material-ui/core/TextField/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete/Autocomplete";
+import getAllProfsList from "./serverConnection/getAllProfsList";
 
 
 
@@ -14,10 +11,10 @@ import Autocomplete from "@material-ui/lab/Autocomplete/Autocomplete";
 function App() {
 
      // const [selection,changeSelection] = useState("Courses");
-     const [list,setList] = useState("");
      const [courses,setCourses]= useState([""]);
      const [courseSelected,changeCourseSelected] = useState("");
-
+     const [profs,setProfs]= useState([""]);
+     const [profSelected,changeProfSelected] = useState("");
 
     // function changeSelec() {
     //     if(selection==='Courses')
@@ -28,7 +25,7 @@ function App() {
 
 
 
-    let courseNames;
+
 
     function getCourses() {
         const callback = result => {
@@ -36,12 +33,22 @@ function App() {
             console.log(result);
             const temp=result.map((jsObj => jsObj.name));
             setCourses(temp);
-            setList(temp.map((txt) =>
-                <Link href={'/courses/'+txt}>{txt+"\n"}</Link>
-             ))
         };
 
         getAllCourses(callback)
+
+
+    }
+
+    function getProfList() {
+        const callback = result => {
+            console.log("I am going to print the professors");
+            console.log(result);
+            const temp=result.map((jsObj => jsObj.name));
+            setProfs(temp);
+        };
+
+        getAllProfsList(callback)
 
 
     }
@@ -56,7 +63,8 @@ function App() {
     // }
 
     useEffect(() => {
-            getCourses()
+            getCourses();
+            getProfList()
     }, []);
 
     // function getPosts() {
@@ -82,25 +90,33 @@ function App() {
                 onChange={(event, value) => changeCourseSelected(value)}
                 getOptionLabel={option => option}
                 style={{ width: 300 }}
-                renderInput={params => <TextField {...params} label="Combo box" variant="outlined" />}
+                renderInput={params => <TextField {...params} label="Courses" variant="outlined" />}
             />
             {
                 courses.includes(courseSelected)?
                 <a href={"/courses/"+courseSelected}>Submit</a>
                     :null
             }
-            <button onClick={getCourses}>
-                Courses
-            </button>
 
-            <button >
-                Professor
-            </button>
-            <h4 style={{marginTop: "10px"}}> Courses </h4>
-            <p>
-                {list}
-            </p>
-            <li>{list}</li>
+            <br/>
+            <br/>
+            <br/>
+
+            <Autocomplete
+                id="combo-box-demo"
+                options={profs.sort()}
+                groupBy={option => option[0].toUpperCase()}
+                onChange={(event, value) => changeProfSelected(value)}
+                getOptionLabel={option => option}
+                style={{ width: 300 }}
+                renderInput={params => <TextField {...params} label="Professors" variant="outlined" />}
+            />
+            {
+                profs.includes(profSelected)?
+                    <a href={"/professors/"+profSelected}>Submit</a>
+                    :null
+            }
+
         </div>
 
     )

@@ -1,8 +1,13 @@
 import axios from "axios";
 
-const addLikeToList = (data) => {
+const addLikeToList = (data,type) => {
     // const data= {name: course_name }
-    axios.put('/api/put/courseRevLikeToList',data)
+    let url;
+    if(type===0)
+        url='/api/put/courseRevLikeToList';
+    else
+        url='/api/put/profRevLikeToList';
+    axios.put(url,data)
         .then(res => console.log(res.data))
 
 };

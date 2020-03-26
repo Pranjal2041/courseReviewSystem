@@ -6,6 +6,7 @@ import { createBrowserHistory } from "history";
 
 import App from './App';
 import CourseReviewsPage from "./courseReviewsPage";
+import ProfReviewPage from "./profReviewsPage"
 import * as serviceWorker from './serviceWorker';
 
 var hist = createBrowserHistory();
@@ -14,6 +15,8 @@ ReactDOM.render(
     <Router history={hist}>
         <Switch>
             <Route path="/courses/:title" component={CourseReviewsPage} />
+            <Route path="/professors/:title" component={ProfReviewPage} />
+
             <Route path="/" component={App} />
 
         </Switch>

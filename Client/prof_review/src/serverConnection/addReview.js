@@ -1,8 +1,13 @@
 import axios from "axios";
 
-const addReview = (data) => {
+const addReview = (data,type) => {
     // const data= {name: course_name }
-    axios.post('/api/post/coursePost',data )
+    let url;
+    if(type===0)
+        url='/api/post/coursePost';
+    else
+        url='/api/post/profPost';
+    axios.post(url,data )
         .then(res => console.log(res.data))
 };
 

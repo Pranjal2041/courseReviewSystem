@@ -1,8 +1,13 @@
 import axios from "axios";
 
-const likeReview = (data) => {
+const likeReview = (data,type) => {
     // const data= {name: course_name }
-    axios.put('/api/put/courseRevLike',data)
+    let url;
+    if(type===0)
+        url='/api/put/courseRevLike';
+    else
+        url='/api/put/profRevLike';
+    axios.put(url,data)
         .then(res => console.log(res.data))
 
 };

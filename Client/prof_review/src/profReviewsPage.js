@@ -1,17 +1,12 @@
 import React, {useEffect, useState} from "react";
 import './App.css';
 import getReviewsOfCourse from './serverConnection/getCourseReview'
-import reviewItem from "./components/reviewItem";
 
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import ReviewItem from "./components/reviewItem";
 import YourReviewItem from "./components/YourReviewItem";
-import Prompt from "react-router-dom/es/Prompt";
 import Dialog from "@material-ui/core/Dialog/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent/DialogContent";
@@ -27,12 +22,12 @@ import Rating from "@material-ui/lab/Rating/Rating";
 import Typography from "@material-ui/core/Typography/Typography";
 import Box from "@material-ui/core/Box/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete/Autocomplete";
-import Link from "@material-ui/core/Link";
 import getAllProfsList from "./serverConnection/getAllProfsList";
+import getAllCourses from "./serverConnection/getData";
+import getReviewsOfProf from "./serverConnection/getProfReview";
 
 
-
-function CourseReviewsPage(props) {
+function ProfReviewsPage(props) {
 
 
     const [state,changeState] = useState(null);
@@ -41,28 +36,31 @@ function CourseReviewsPage(props) {
     const [rid,setRid]=useState(-1);
     const [reviewPresent,changeReviewPresent] =useState(false);
     const [difficultyRating,setDifficultyRating] =useState(3);
-    const [courseSpeed,setCourseSpeed] =useState(3);
-    const [courseValue,setCourseValue] =useState(3);
-    const [profRating,setProfRating] =useState(3);
-    const [profList,setProfList] = useState([""]);
-    const [profSelected,setProfSelected] = useState([""]);
+    const [profSpeed,setProfSpeed] =useState(3);
+    const [profValue,setProfValue] =useState(3);
+    const [courseRating,setCourseRating] =useState(3);
+    const [courseList,setCourseList] = useState([""]);
+    const [courseSelected,setCourseSelected] = useState([""]);
 
 
-    function getProfList() {
+
+    function getCourses() {
         const callback = result => {
             console.log("I am going to print the courses");
             console.log(result);
             const temp=result.map((jsObj => jsObj.name));
-            setProfList(temp);
+            setCourseList(temp);
         };
 
-        getAllProfsList(callback)
+        getAllCourses(callback)
 
 
     }
 
-    function openCourse(txt) {
+    function openProf(txt) {
         const callback = result => {
+
+            console.log("Now shall I print all reviews of Professors");
             console.log(result[0]);
             changeState(result);
             if(result!=null) {
@@ -71,9 +69,9 @@ function CourseReviewsPage(props) {
 
                         setValues({review: message.review, rating: message.rating,likes:message.likes});
                         setDifficultyRating(message.level[0]);
-                        setCourseSpeed(message.level[1]);
-                        setCourseValue(message.level[2]);
-                        setProfRating(message.level[3]);
+                        setProfSpeed(message.level[1]);
+                        setProfValue(message.level[2]);
+                        setCourseRating(message.level[3]);
 
                         changeReviewPresent(true);
                         setRid(message.rid)
@@ -82,9 +80,9 @@ function CourseReviewsPage(props) {
             }
 
         };
-        console.log("I am trying to get reviews of particular course");
-        getReviewsOfCourse(callback, txt);
+        console.log("I am trying to get reviews of particular prof");
 
+        getReviewsOfProf(callback,txt);
 
     }
 
@@ -108,8 +106,8 @@ function CourseReviewsPage(props) {
 
 
     useEffect(() => {
-        openCourse(title);
-        getProfList();
+        openProf(title);
+        getCourses();
     }, []);
 
     const handleClickOpen = () => {
@@ -127,9 +125,9 @@ function CourseReviewsPage(props) {
         const data2={rid:msg.rid,
         uid: my_uid};
         if(checkIfLikePoss(msg)){
-            likeReview(data,0);
-            addLikeToList(data2,0);
-            openCourse(title)
+            likeReview(data,1);
+            addLikeToList(data2,1);
+            openProf(title)
         }
         else
             alert("Already liked")
@@ -152,7 +150,7 @@ function CourseReviewsPage(props) {
         console.log("So we are adding review");
 
         console.log(values);
-        const arr=[difficultyRating,courseSpeed,courseValue,profRating];
+        const arr=[difficultyRating,profSpeed,profValue,courseRating];
         const temp="{"+arr.toString()+"}";
         console.log(arr);
         if(reviewPresent){
@@ -161,15 +159,15 @@ function CourseReviewsPage(props) {
                 review: values.review,
                 rating: values.rating,
                 level: temp,
-                prof: profSelected,
+                course: courseSelected,
             };
-            editReview(data,0);
+            editReview(data,1);
             // openCourse(title);
             handleClose();
 
         }else{
         const data={
-            cid: 1,
+            pid: 1,
             uid: my_uid,
             review: values.review,
             rating: values.rating,
@@ -177,11 +175,11 @@ function CourseReviewsPage(props) {
             level: temp,
             name: title,
             user_name: my_username,
-            profRating: profRating,
-            prof: profSelected
+            courseRating: courseRating,
+            course: courseSelected
         };
-        addReview(data,0);
-        openCourse(title);
+        addReview(data,1);
+        openProf(title);
         handleClose()}
     };
 
@@ -191,11 +189,7 @@ function CourseReviewsPage(props) {
 
             return (
                 <div>
-                    <h1> {"Showing all reviews of course " + title} </h1>
-
-                    <Prompt>
-
-                    </Prompt>
+                    <h1> {"Showing all reviews of professor " + title} </h1>
 
                     <Table>
                         <TableBody>
@@ -203,7 +197,7 @@ function CourseReviewsPage(props) {
                             }{
                                     checkIfReviewExists()
                                     ? state.map( message => (message.uid===my_uid )?
-                                     <div> <YourReviewItem level={message.level} prof={message.prof_names} author={message.uid} review={message.review} rating={message.rating} likes={message.likes}
+                                     <div> <YourReviewItem level={message.level} prof={message.course_names} author={message.uid} review={message.review} rating={message.rating} likes={message.likes}
                                      /> <button onClick={handleClickOpen}> Edit your review </button> <br/><br/></div>
                                      :null
                                     )
@@ -219,7 +213,7 @@ function CourseReviewsPage(props) {
                                 ? state.map( message => (message.uid===my_uid )?
                                      null
                                     :
-                                    <div><ReviewItem level={message.level} prof={message.prof_names} author={message.uid} review={message.review} rating={message.rating} likes={message.likes} />
+                                    <div><ReviewItem level={message.level} prof={message.course_names} author={message.uid} review={message.review} rating={message.rating} likes={message.likes} />
                                         <button onClick={() => likeRev(message)}>Like</button>
                                     </div>
                                 )
@@ -230,7 +224,7 @@ function CourseReviewsPage(props) {
 
 
                     <Dialog open={dialogOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
-                            <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+                            <DialogTitle id="form-dialog-title">{"Review of Professor:- "+title }</DialogTitle>
                             <DialogContent>
                                 <DialogContentText>
                                     Add your review
@@ -259,7 +253,7 @@ function CourseReviewsPage(props) {
 
 
                                 <Box component="fieldset" mb={3} borderColor="transparent">
-                                    <Typography component="legend">Difficulty Level</Typography>
+                                    <Typography component="legend">Professor Strictness</Typography>
                                     <Rating
                                         name="simple-controlled"
                                         value={difficultyRating}
@@ -270,42 +264,42 @@ function CourseReviewsPage(props) {
                                     />
                                 </Box>
                                 <Box component="fieldset" mb={3} borderColor="transparent">
-                                    <Typography component="legend">Course Speed</Typography>
+                                    <Typography component="legend">Professor Speed</Typography>
                                     <Rating
                                         name="simple-controlled2"
-                                        value={courseSpeed}
+                                        value={profSpeed}
                                         precision={0.5}
                                         onChange={(event, newValue) => {
-                                            setCourseSpeed(newValue);
+                                            setProfSpeed(newValue);
                                         }}
                                     />
                                 </Box>
                                 <Box component="fieldset" mb={3} borderColor="transparent">
-                                    <Typography component="legend">Course Value</Typography>
+                                    <Typography component="legend">Professor Value</Typography>
                                     <Rating
                                         name="simple-controlled3"
-                                        value={courseValue}
+                                        value={profValue}
                                         precision={0.5}
                                         onChange={(event, newValue) => {
-                                            setCourseValue(newValue);
+                                            setProfValue(newValue);
                                         }}
                                     />
                                 </Box>
                                 <Box component="fieldset" mb={3} borderColor="transparent">
-                                    <Typography component="legend">Prof Rating</Typography>
+                                    <Typography component="legend">Course Rating</Typography>
                                     <Rating
                                         name="simple-controlled4"
-                                        value={profRating}
+                                        value={courseRating}
                                         precision={0.5}
                                         onChange={(event, newValue) => {
-                                            setProfRating(newValue);
+                                            setCourseRating(newValue);
                                         }}
                                     />
                                     <Autocomplete
-                                        id="profSelectInCourse"
-                                        options={profList.sort()}
+                                        id="courseSelectedInProf"
+                                        options={courseList.sort()}
                                         groupBy={option => option[0].toUpperCase()}
-                                        onChange={(event, value) => setProfSelected(value)}
+                                        onChange={(event, value) => setCourseSelected(value)}
                                         getOptionLabel={option => option}
                                         style={{ width: 300 }}
                                         renderInput={params => <TextField {...params} label="Combo box" variant="outlined" />}
@@ -336,4 +330,4 @@ function CourseReviewsPage(props) {
 
 
 
-export default CourseReviewsPage;
+export default ProfReviewsPage;

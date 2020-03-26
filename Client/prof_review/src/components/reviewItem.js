@@ -1,6 +1,8 @@
 import React from "react";
 
+
 function ReviewItem(props) {
+    try{
     return(
     <div>
         <p> {props.author + " \t "}</p>
@@ -16,7 +18,10 @@ function ReviewItem(props) {
 
     </div>
 
-)
+)}catch (e) {
+
+    }
+    return null
 }
 
 export default ReviewItem

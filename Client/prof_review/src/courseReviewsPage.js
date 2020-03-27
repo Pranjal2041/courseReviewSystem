@@ -29,6 +29,11 @@ import Box from "@material-ui/core/Box/Box";
 import Autocomplete from "@material-ui/lab/Autocomplete/Autocomplete";
 import Link from "@material-ui/core/Link";
 import getAllProfsList from "./serverConnection/getAllProfsList";
+import addRepOfAuthor from "./serverConnection/addRepOfAuthor";
+import auth0Client from "./Auth";
+import AppContext from "./utils/context";
+
+const {useContext} = require("react");
 
 
 
@@ -101,10 +106,12 @@ function CourseReviewsPage(props) {
         return flag
     }
 
+    const context = useContext(AppContext);
+
 
     const {title} = props.match.params;
     const my_uid =1;
-    const my_username="Invincible";
+    const my_username=context.name;
 
 
     useEffect(() => {
@@ -129,6 +136,7 @@ function CourseReviewsPage(props) {
         if(checkIfLikePoss(msg)){
             likeReview(data,0);
             addLikeToList(data2,0);
+            addRepOfAuthor({name: msg.user_name});
             openCourse(title)
         }
         else
@@ -138,8 +146,8 @@ function CourseReviewsPage(props) {
     }
 
     function checkIfLikePoss(msg) {
-        const temp= msg.like_user_ids;
         let flag=true;
+        const temp= msg.like_user_ids;
         for (let i=0; i< temp.length;i++){
             if(temp[i]===my_uid)
             {   flag=false;
@@ -191,6 +199,7 @@ function CourseReviewsPage(props) {
 
             return (
                 <div>
+                    <button>{context.name}</button>
                     <h1> {"Showing all reviews of course " + title} </h1>
 
                     <Prompt>

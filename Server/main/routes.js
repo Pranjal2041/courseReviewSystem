@@ -10,6 +10,14 @@ router.get('/api/get/profList', (req, res, next ) => {
         })
 });
 
+router.get('/api/get/checkUserName', (req, res, next ) => {
+    pool.query(`SELECT EXISTS(SELECT uid FROM users WHERE name= $1)`,[req.query.name],
+        (q_err, q_res) => {
+            console.log(q_res);
+            res.json(q_res.rows)
+        })
+});
+
 router.get('/api/get/courseList', (req, res, next ) => {
     pool.query(`SELECT * FROM course_names`,
         (q_err, q_res) => {
@@ -37,6 +45,16 @@ router.put('/api/put/courseRevLike', (req, res, next) => {
     const values = [ req.body.rid];
     pool.query(`UPDATE course_reviews SET likes = likes + 1
               WHERE rid = $1`, values,
+        (q_err, q_res) => {
+            console.log(q_res);
+            console.log(q_err)
+        })
+});
+
+router.put('/api/put/addRep', (req, res, next) => {
+    const values = [ req.body.user_name];
+    pool.query(`UPDATE users SET reputation = reputation + 1
+              WHERE name = $1`, values,
         (q_err, q_res) => {
             console.log(q_res);
             console.log(q_err)
@@ -133,7 +151,17 @@ router.post('/api/post/coursePost', (req, res, next) => {
         })
 });
 
-
+router.post('/api/post/addUser', (req, res, next) => {
+    values=[ req.body.name
+    ];
+    pool.query(`INSERT INTO users (name,reputation)
+     VALUES
+     ($1,0)`,
+        values, (q_err, q_res) => {
+            if(q_err) return next(q_err);
+            res.json(q_res.rows)
+        })
+});
 router.post('/api/post/profPost', (req, res, next) => {
     console.log("Trying to post");
     console.log(req);

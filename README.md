@@ -23,5 +23,13 @@ This app bsically allows to rate and review professors and courses based on diff
 * Admin can create a new page of any professor or course
 * The admin may delete a comment because of its explicit content or it is off-topic
 * the admin may ban a user for any amount of time, in which case the user will recieve a suitable message.
+* admin can also see all reviews and list of all users.
+
+## Features to be implemented
+* Allow users to report a review making it easy for admin to moderate content. This would be an easy task and can be implemented similar to likes feature.
+* Improve UI
+* Allow sorting reviews based on different parameters
+* Adding this on github pages
 
 The drive link containing answers to other questions and demo video of the app:-
+https://drive.google.com/open?id=1OpDboSyJOPQlMyURGtHrqoDUoZx8rike

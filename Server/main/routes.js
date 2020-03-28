@@ -10,6 +10,21 @@ router.get('/api/get/profList', (req, res, next ) => {
         })
 });
 
+router.get('/api/get/admin/profRevList', (req, res, next ) => {
+    pool.query(`SELECT * FROM professor_reviews`,
+        (q_err, q_res) => {
+            res.json(q_res.rows)
+        })
+});
+
+
+router.get('/api/get/admin/courseRevList', (req, res, next ) => {
+    pool.query(`SELECT * FROM course_reviews`,
+        (q_err, q_res) => {
+            res.json(q_res.rows)
+        })
+});
+
 router.get('/api/get/checkUserName', (req, res, next ) => {
     pool.query(`SELECT EXISTS(SELECT uid FROM users WHERE name= $1)`,[req.query.name],
         (q_err, q_res) => {
@@ -45,6 +60,18 @@ router.put('/api/put/courseRevLike', (req, res, next) => {
     const values = [ req.body.rid];
     pool.query(`UPDATE course_reviews SET likes = likes + 1
               WHERE rid = $1`, values,
+        (q_err, q_res) => {
+            console.log(q_res);
+            console.log(q_err)
+        })
+});
+
+router.put('/api/put/admin/banUser', (req, res, next) => {
+    const values = [req.body.time,req.body.uid];
+    console.log("Just look here as I print value of values");
+    console.log(values);
+    console.log(values[0]);
+    pool.query('UPDATE users SET bannedtime = (NOW() + INTERVAL \''+values[0]+' day\' ) WHERE uid = '+values[1],
         (q_err, q_res) => {
             console.log(q_res);
             console.log(q_err)
@@ -183,6 +210,49 @@ router.post('/api/post/profPost', (req, res, next) => {
             res.json(q_res.rows)
         })
 });
+
+
+router.post('/api/post/addCourse', (req, res, next) => {
+    pool.query(`INSERT INTO course_names (name)
+     VALUES
+     ($1)`,
+        [req.body.name], (q_err, q_res) => {
+            if(q_err) return next(q_err);
+            res.json(q_res.rows)
+        })
+});
+
+router.post('/api/post/addProf', (req, res, next) => {
+    pool.query(`INSERT INTO prof_names (name)
+     VALUES
+     ($1)`,
+        [req.body.name], (q_err, q_res) => {
+            if(q_err) return next(q_err);
+            res.json(q_res.rows)
+        })
+});
+
+router.delete('/api/delete/admin/delProfRev', (req, res, next) => {
+    const rid = req.body.rid;
+    pool.query(`DELETE FROM professor_reviews
+              WHERE rid = $1`, [rid],
+        (q_err, q_res) => {
+            res.json(q_res.rows);
+            console.log(q_err)
+        })
+});
+
+router.delete('/api/delete/admin/delCourseRev', (req, res, next) => {
+    const rid = req.body.rid;
+    pool.query(`DELETE FROM course_reviews
+              WHERE rid = $1`, [rid],
+        (q_err, q_res) => {
+            res.json(q_res.rows);
+            console.log(q_err)
+        })
+});
+
+
 
 
 module.exports = router;

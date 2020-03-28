@@ -202,10 +202,6 @@ function CourseReviewsPage(props) {
                     <button>{context.name}</button>
                     <h1> {"Showing all reviews of course " + title} </h1>
 
-                    <Prompt>
-
-                    </Prompt>
-
                     <Table>
                         <TableBody>
                             {

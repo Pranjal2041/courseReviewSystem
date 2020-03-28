@@ -25,6 +25,8 @@ import Autocomplete from "@material-ui/lab/Autocomplete/Autocomplete";
 import getAllProfsList from "./serverConnection/getAllProfsList";
 import getAllCourses from "./serverConnection/getData";
 import getReviewsOfProf from "./serverConnection/getProfReview";
+import ProfReviewItem from "./components/profReviewItem";
+import axios from "axios";
 
 
 function ProfReviewsPage(props) {
@@ -41,7 +43,7 @@ function ProfReviewsPage(props) {
     const [courseRating,setCourseRating] =useState(3);
     const [courseList,setCourseList] = useState([""]);
     const [courseSelected,setCourseSelected] = useState([""]);
-
+    const [bannedTime,setBannedTime] =useState(true);
 
 
     function getCourses() {
@@ -105,12 +107,36 @@ function ProfReviewsPage(props) {
     const my_username="Invincible";
 
 
+    function getMyBannedTime(uid){
+        const callback = result =>{
+            console.log("Watch this");
+
+            setBannedTime(JSON.stringify(result[0]).indexOf("false") === -1);
+
+            console.log(result);
+        };
+
+        const getTime = (callback) => {
+            axios.get('/api/get/userTime',{params: {uid: uid}})
+                .then(res => callback(res.data))
+        };
+
+        getTime(callback);
+
+    }
+
     useEffect(() => {
         openProf(title);
         getCourses();
+        getMyBannedTime(my_uid)
     }, []);
 
     const handleClickOpen = () => {
+        if(!bannedTime)
+        {
+            alert("You have been banned by the administrator");
+            return;
+        }
         setDialogOpen(true);
     };
 
@@ -121,6 +147,11 @@ function ProfReviewsPage(props) {
     };
 
     function likeRev(msg) {
+        if(!bannedTime)
+        {
+            alert("You have been banned by the administrator");
+            return;
+        }
         const data={rid: msg.rid};
         const data2={rid:msg.rid,
         uid: my_uid};
@@ -149,6 +180,10 @@ function ProfReviewsPage(props) {
     const handleSubmit = (event) => {
         console.log("So we are adding review");
 
+        let anonymous=false;
+        if(event===1)
+            anonymous=true;
+
         console.log(values);
         const arr=[difficultyRating,profSpeed,profValue,courseRating];
         const temp="{"+arr.toString()+"}";
@@ -160,6 +195,7 @@ function ProfReviewsPage(props) {
                 rating: values.rating,
                 level: temp,
                 course: courseSelected,
+                anony: anonymous
             };
             editReview(data,1);
             // openCourse(title);
@@ -176,7 +212,8 @@ function ProfReviewsPage(props) {
             name: title,
             user_name: my_username,
             courseRating: courseRating,
-            course: courseSelected
+            course: courseSelected,
+            anony: anonymous
         };
         addReview(data,1);
         openProf(title);
@@ -213,7 +250,7 @@ function ProfReviewsPage(props) {
                                 ? state.map( message => (message.uid===my_uid )?
                                      null
                                     :
-                                    <div><ReviewItem level={message.level} prof={message.course_names} author={message.uid} review={message.review} rating={message.rating} likes={message.likes} />
+                                    <div><ProfReviewItem anony={message.anony} level={message.level} prof={message.course_names} author={message.uid} review={message.review} rating={message.rating} likes={message.likes} />
                                         <button onClick={() => likeRev(message)}>Like</button>
                                     </div>
                                 )
@@ -313,6 +350,9 @@ function ProfReviewsPage(props) {
                                 </Button>
                                 <Button onClick={handleSubmit} color="primary">
                                     Submit
+                                </Button>
+                                <Button onClick={() => handleSubmit(1)}>
+                                    Post Anonymously
                                 </Button>
                             </DialogActions>
                         </Dialog>

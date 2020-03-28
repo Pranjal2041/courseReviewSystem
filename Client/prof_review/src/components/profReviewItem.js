@@ -5,7 +5,7 @@ function ProfReviewItem(props) {
     try{
     return(
     <div>
-        <p> {props.author + " \t "}</p>
+        <p> {(props.anony===1)?"Anonymous":props.author + " \t "}</p>
         <p> {"Rating:- "+props.rating+"\t"+"Difficulty:-"+props.level[0]+"\t"+"Speed:-"+props.level[1]+"\t"+"value:- "+props.level[2]}</p>
         <p>{"Course taught"+props.prof+"\t"+"Course Rating:-"+props.level[3]}</p>
         <h6> Review</h6>

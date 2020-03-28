@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import './App.css';
 import getReviewsOfCourse from './serverConnection/getCourseReview'
 import reviewItem from "./components/reviewItem";
-
+import axios from 'axios'
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -51,7 +51,8 @@ function CourseReviewsPage(props) {
     const [profRating,setProfRating] =useState(3);
     const [profList,setProfList] = useState([""]);
     const [profSelected,setProfSelected] = useState([""]);
-
+    const [anonymousPublishing,setAnonymousPublishing]= useState(false);
+    const [bannedTime,setBannedTime] = useState(true);
 
     function getProfList() {
         const callback = result => {
@@ -113,13 +114,37 @@ function CourseReviewsPage(props) {
     const my_uid =1;
     const my_username=context.name;
 
+    function getMyBannedTime(uid){
+        const callback = result =>{
+            console.log("Watch this");
+
+            setBannedTime(JSON.stringify(result[0]).indexOf("false") === -1);
+
+            console.log(result);
+        };
+
+        const getTime = (callback) => {
+            axios.get('/api/get/userTime',{params: {uid: uid}})
+                .then(res => callback(res.data))
+        };
+
+        getTime(callback);
+
+    }
+
 
     useEffect(() => {
         openCourse(title);
         getProfList();
+        getMyBannedTime(my_uid);
     }, []);
 
     const handleClickOpen = () => {
+        if(!bannedTime)
+        {
+            alert("You have been banned by the administrator");
+            return;
+        }
         setDialogOpen(true);
     };
 
@@ -130,6 +155,11 @@ function CourseReviewsPage(props) {
     };
 
     function likeRev(msg) {
+        if(!bannedTime)
+        {
+            alert("You have been banned by the administrator");
+            return;
+        }
         const data={rid: msg.rid};
         const data2={rid:msg.rid,
         uid: my_uid};
@@ -157,7 +187,16 @@ function CourseReviewsPage(props) {
     }
 
     const handleSubmit = (event) => {
+
         console.log("So we are adding review");
+        let anonymous=0;
+        if(event===1)
+            anonymous=1;
+
+
+
+
+
 
         console.log(values);
         const arr=[difficultyRating,courseSpeed,courseValue,profRating];
@@ -170,6 +209,8 @@ function CourseReviewsPage(props) {
                 rating: values.rating,
                 level: temp,
                 prof: profSelected,
+                anony: anonymous,
+                banned: bannedTime
             };
             editReview(data,0);
             // openCourse(title);
@@ -186,7 +227,9 @@ function CourseReviewsPage(props) {
             name: title,
             user_name: my_username,
             profRating: profRating,
-            prof: profSelected
+            prof: profSelected,
+            anony: anonymous,
+            banned: bannedTime
         };
         addReview(data,0);
         openCourse(title);
@@ -199,7 +242,7 @@ function CourseReviewsPage(props) {
 
             return (
                 <div>
-                    <button>{context.name}</button>
+                    <button>{bannedTime?"True":"False"}</button>
                     <h1> {"Showing all reviews of course " + title} </h1>
 
                     <Table>
@@ -224,7 +267,7 @@ function CourseReviewsPage(props) {
                                 ? state.map( message => (message.uid===my_uid )?
                                      null
                                     :
-                                    <div><ReviewItem level={message.level} prof={message.prof_names} author={message.uid} review={message.review} rating={message.rating} likes={message.likes} />
+                                    <div><ReviewItem anony={message.anony} level={message.level} prof={message.prof_names} author={message.uid} review={message.review} rating={message.rating} likes={message.likes} />
                                         <button onClick={() => likeRev(message)}>Like</button>
                                     </div>
                                 )
@@ -323,7 +366,10 @@ function CourseReviewsPage(props) {
                                     Cancel
                                 </Button>
                                 <Button onClick={handleSubmit} color="primary">
-                                    Submit
+                                    Post
+                                </Button>
+                                <Button onClick={() => handleSubmit(1)}>
+                                    Post Anonymously
                                 </Button>
                             </DialogActions>
                         </Dialog>

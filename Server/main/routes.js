@@ -3,6 +3,20 @@ var router = express.Router();
 var pool =require('./db');
 
 
+router.get('/api/get/userTime', (req, res, next ) => {
+
+    console.log(req.query.uid);
+    pool.query(`SELECT NOW() >= (SELECT bannedtime from users WHERE uid=$1)`,[req.query.uid],
+        (q_err, q_res) => {
+            console.log(q_res);
+            if(q_res!==undefined)
+                res.json(q_res.rows);
+            else
+                res.json(q_res)
+        })
+});
+
+
 router.get('/api/get/profList', (req, res, next ) => {
     pool.query(`SELECT * FROM prof_names`,
         (q_err, q_res) => {
@@ -127,10 +141,11 @@ router.put('/api/put/courseRevEdit', (req, res, next) => {
         req.body.review,
         req.body.rating,
         req.body.level,
-        req.body.prof
+        req.body.prof,
+        req.body.anony
     ];
     console.log(values);
-    pool.query(`UPDATE course_reviews SET review= $2, rating=$3, level=$4, prof_names=$5
+    pool.query(`UPDATE course_reviews SET review= $2, rating=$3, level=$4, prof_names=$5, anony=$6
               WHERE rid = $1`, values,
         (q_err, q_res) => {
             console.log("So here I log the errors");
@@ -144,10 +159,11 @@ router.put('/api/put/profRevEdit', (req, res, next) => {
         req.body.review,
         req.body.rating,
         req.body.level,
-        req.body.course
+        req.body.course,
+        req.body.anony
     ];
     console.log(values);
-    pool.query(`UPDATE professor_reviews SET review= $2, rating=$3, level=$4, course_names=$5
+    pool.query(`UPDATE professor_reviews SET review= $2, rating=$3, level=$4, course_names=$5, anony=$6
               WHERE rid = $1`, values,
         (q_err, q_res) => {
             console.log("So here I log the errors");
@@ -167,11 +183,12 @@ router.post('/api/post/coursePost', (req, res, next) => {
         req.body.level,
         req.body.name,
         req.body.username,
-        req.body.prof
+        req.body.prof,
+        req.body.anony
     ];
-    pool.query(`INSERT INTO course_reviews (cid,uid,review,rating,likes,level,name,user_name,prof_names,date)
+    pool.query(`INSERT INTO course_reviews (cid,uid,review,rating,likes,level,name,user_name,prof_names,anony,date)
      VALUES
-     ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW())`,
+     ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,NOW())`,
         values, (q_err, q_res) => {
             if(q_err) return next(q_err);
             res.json(q_res.rows)
@@ -200,11 +217,12 @@ router.post('/api/post/profPost', (req, res, next) => {
         req.body.level,
         req.body.name,
         req.body.username,
-        req.body.course
+        req.body.course,
+        req.body.anony
     ];
-    pool.query(`INSERT INTO professor_reviews (pid,uid,review,rating,likes,level,name,user_name,course_names,date)
+    pool.query(`INSERT INTO professor_reviews (pid,uid,review,rating,likes,level,name,user_name,course_names,anony,date)
      VALUES
-     ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW())`,
+     ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,NOW())`,
         values, (q_err, q_res) => {
             if(q_err) return next(q_err);
             res.json(q_res.rows)

@@ -198,7 +198,7 @@ function ProfReviewsPage(props) {
         if(checkIfLikePoss(msg)){
             likeReview(data,1);
             addLikeToList(data2,1);
-            openProf(title)
+            setTimeout(() => openProf(title), 1000);
         }
         else
             alert("Already liked")
@@ -256,7 +256,7 @@ function ProfReviewsPage(props) {
             anony: anonymous
         };
         addReview(data,1);
-        openProf(title);
+            setTimeout(() => openProf(title), 1000);
         handleClose()}
     };
 

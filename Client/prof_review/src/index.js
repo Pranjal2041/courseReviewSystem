@@ -13,9 +13,6 @@ import Callback from "./Callback";
 
 var hist = createBrowserHistory();
 
-window.$user_name = ''; //global variable
-window.$user_id = -1;
-window.$isAuthenticated = false;
 
 ReactDOM.render(
     <Router history={hist}>

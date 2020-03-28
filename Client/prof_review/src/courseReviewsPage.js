@@ -209,7 +209,7 @@ function CourseReviewsPage(props) {
             likeReview(data,0);
             addLikeToList(data2,0);
             addRepOfAuthor({name: msg.user_name});
-            openCourse(title)
+            setTimeout(() => openCourse(title), 1000);
         }
         else
             alert("Already liked")
@@ -276,7 +276,7 @@ function CourseReviewsPage(props) {
             banned: bannedTime
         };
         addReview(data,0);
-        openCourse(title);
+        setTimeout(() => openCourse(title), 1000);
         handleClose()}
     };
 

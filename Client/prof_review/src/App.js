@@ -13,6 +13,7 @@ import Store, {Context} from "./store";
 import Reducer from "./reducer";
 import getUserId from "./serverConnection/getUserId";
 import {Link} from "react-router-dom";
+import axios from "axios";
 
 
 
@@ -29,6 +30,7 @@ function App() {
      const [profs,setProfs]= useState([""]);
      const [profSelected,changeProfSelected] = useState("");
     const [state,dispatch]=useReducer(Reducer);
+    const [isBanned,setIsBanned] = useState(false);
 
     let my_uid=-1;
     let user_name='';
@@ -100,6 +102,23 @@ function App() {
         console.log(auth0Client.getProfile())
     }
 
+    function getMyBannedTime(uid){
+        const callback = result =>{
+
+            setIsBanned(JSON.stringify(result[0]).indexOf("false") === -1);
+
+            console.log(result);
+        };
+
+        const getTime = (callback) => {
+            axios.get('/api/get/userTime',{params: {uid: uid}})
+                .then(res => callback(res.data))
+        };
+
+        getTime(callback);
+
+    }
+
     useEffect(() => {
             getCourses();
             getProfList();
@@ -128,6 +147,8 @@ function App() {
                 localStorage.setItem("user_name",'');
                 localStorage.setItem("user_id",-1);
             }
+
+        getMyBannedTime(my_uid);
 
     }, []);
 
@@ -188,8 +209,9 @@ function App() {
             {
                 auth0Client.isAuthenticated() ?
                 <div>
-                    <h4>{auth0Client.getProfile().nickname}</h4>
-                    <h4>{auth0Client.getProfile().name}</h4>
+                    <h3>{!isBanned?"You have been banned by administrator. You cannot post or like anything":""}</h3>
+                    <h4>{"UserName:- "+auth0Client.getProfile().nickname}</h4>
+                    <h4>{"Email Id:- "+auth0Client.getProfile().name}</h4>
                     <br />
 
                     <button onClick={printThisShit}> Hi </button>

@@ -45,6 +45,7 @@ function App() {
   const [userToBeBanned,setUserTobBanned] = useState("");
   const [userBanDialogOpen,setUserBanDialogOpen] =useState(false);
 
+  const [canContinue,setCanContinue] = useState(false);
 
   const [values,setValues]=useState("");
 
@@ -292,209 +293,216 @@ function App() {
     reloadData();
     if(auth0Client.isAuthenticated())
     {
-      const callback = result => {
-        console.log("I am checking if user ever existed in my database");
-        if(!result[0].exists){
-          //addUser({name: auth0Client.getProfile().nickname})
-        }
-        // dispatch({type: "UPDATE", payload: auth0Client.getProfile().nickname})
-      };
-      //checkIfUserNameExists(callback,auth0Client.getProfile().nickname)
+      if(auth0Client.getProfile().name==='pranjal2041+admin@gmail.com'){
+        setCanContinue(true)
+      }
+      else{
+        alert("You need to login from admin account to use this app")
+        signOut();
+      }
     }
 
   }, []);
 
   return(
-        <div>
+      <div>
+      {((auth0Client.isAuthenticated() && canContinue)) ?
 
-          <Autocomplete
-              id="combo-box-demo2"
-              options={courses.sort()}
-              groupBy={option => option[0].toUpperCase()}
-              onChange={(event, value) => changeCourseSelected(value)}
-              getOptionLabel={option => option}
-              style={{ width: 300 }}
-              renderInput={params => <TextField {...params} label="Courses" variant="outlined" />}
-          />
-          {
-            courses.includes(courseSelected)?
-                <button onClick={showParticularCourseReviews}>Submit</button>
-                :null
-          }
-          <br/>
-          <button onClick={handleDialogOpen}>Add a course</button>
-          <br/>
-          <br/>
-          <br/>
+          <div>
 
-          <Autocomplete
-              id="combo-box-demo"
-              options={profs.sort()}
-              groupBy={option => option[0].toUpperCase()}
-              onChange={(event, value) => changeProfSelected(value)}
-              getOptionLabel={option => option}
-              style={{ width: 300 }}
-              renderInput={params => <TextField {...params} label="Professors" variant="outlined" />}
-          />
-          {
-            profs.includes(profSelected)?
-                <button onClick={showParticularProfReviews}>Submit</button>
-                :null
-          }
+            <Autocomplete
+                id="combo-box-demo2"
+                options={courses.sort()}
+                groupBy={option => option[0].toUpperCase()}
+                onChange={(event, value) => changeCourseSelected(value)}
+                getOptionLabel={option => option}
+                style={{width: 300}}
+                renderInput={params => <TextField {...params} label="Courses" variant="outlined"/>}
+            />
+            {
+              courses.includes(courseSelected) ?
+                  <button onClick={showParticularCourseReviews}>Submit</button>
+                  : null
+            }
+            <br/>
+            <button onClick={handleDialogOpen}>Add a course</button>
+            <br/>
+            <br/>
+            <br/>
 
-          <button onClick={handleProfDialogOpen}>Add a Professor</button>
-
-
-          {
-            auth0Client.isAuthenticated() ?
-                <div>
-                  <h4>{auth0Client.getProfile().nickname}</h4>
-                  <h4>{auth0Client.getProfile().name}</h4>
-                  <br />
-
-                  <button onClick={signOut}>Sign Out</button>
-                </div>
-                :
-                <div>
-                  <button onClick={signIn}>Sign In</button>
-                </div>
-          }
-
-          <button onClick={showAllProfReviews}>See all professor's reviews</button>
-          <button onClick={showAllCourseReviews}>See all course's reviews</button>
-
-          <br/>
-          <br/>
-          <br/>
-          <br/>
-
-          <h3>Reviews</h3>
-          <h1>{whichReview}</h1>
-
-          {
-            () => {
-              return(
-                  <div><button>Hi</button></div>
-              )
+            <Autocomplete
+                id="combo-box-demo"
+                options={profs.sort()}
+                groupBy={option => option[0].toUpperCase()}
+                onChange={(event, value) => changeProfSelected(value)}
+                getOptionLabel={option => option}
+                style={{width: 300}}
+                renderInput={params => <TextField {...params} label="Professors" variant="outlined"/>}
+            />
+            {
+              profs.includes(profSelected) ?
+                  <button onClick={showParticularProfReviews}>Submit</button>
+                  : null
             }
 
-          }
+            <button onClick={handleProfDialogOpen}>Add a Professor</button>
 
-          <Table>
-            <TableBody>
-          {
-            (allProfReviews)?
-                    allProfReviews.map( message => (whichReview===0 || whichReview===2 )?
-                    <div><ProfReviewItem prof_name={message.pid} level={message.level} prof={message.course_names} author={message.uid} review={message.review} rating={message.rating} likes={message.likes} />
-                      <button onClick={() => handleProfRevDelete(message)}>Delete</button>
-                      <button onClick={() => handleUserBan(message)}>Ban this user</button>
-                    </div>:null
 
-                    ):null
-          }
+            {
+              auth0Client.isAuthenticated() ?
+                  <div>
+                    <br/>
 
-              {
-                (allCourseReviews)?
-                    allCourseReviews.map( message => (whichReview===1 || whichReview===3 )?
-                        <div><ReviewItem course_name={message.cid} level={message.level} prof={message.prof_names} author={message.uid} review={message.review} rating={message.rating} likes={message.likes} />
-                          <button onClick={() => handleCourseRevDelete(message)}>Delete</button>
-                          <button onClick={() => handleUserBan(message)}>Ban this user</button>
-                        </div>:null
+                    <button onClick={signOut}>Sign Out</button>
+                  </div>
+                  :
+                  <div>
+                    <button onClick={signIn}>Sign In</button>
+                  </div>
+            }
 
-                    ):null
+            <button onClick={showAllProfReviews}>See all professor's reviews</button>
+            <button onClick={showAllCourseReviews}>See all course's reviews</button>
+
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+
+            <h3>Reviews</h3>
+            <h1>{whichReview}</h1>
+
+            {
+              () => {
+                return (
+                    <div>
+                      <button>Hi</button>
+                    </div>
+                )
               }
 
-            </TableBody>
-          </Table>
+            }
 
-          <br/>
-          <br/>
-          <br/>
+            <Table>
+              <TableBody>
+                {
+                  (allProfReviews) ?
+                      allProfReviews.map(message => (whichReview === 0 || whichReview === 2) ?
+                          <div><ProfReviewItem prof_name={message.pid} level={message.level} prof={message.course_names}
+                                               author={message.uid} review={message.review} rating={message.rating}
+                                               likes={message.likes}/>
+                            <button onClick={() => handleProfRevDelete(message)}>Delete</button>
+                            <button onClick={() => handleUserBan(message)}>Ban this user</button>
+                          </div> : null
+                      ) : null
+                }
 
+                {
+                  (allCourseReviews) ?
+                      allCourseReviews.map(message => (whichReview === 1 || whichReview === 3) ?
+                          <div><ReviewItem course_name={message.cid} level={message.level} prof={message.prof_names}
+                                           author={message.uid} review={message.review} rating={message.rating}
+                                           likes={message.likes}/>
+                            <button onClick={() => handleCourseRevDelete(message)}>Delete</button>
+                            <button onClick={() => handleUserBan(message)}>Ban this user</button>
+                          </div> : null
+                      ) : null
+                }
 
+              </TableBody>
+            </Table>
 
-          <Dialog open={courseDialogOpen} onClose={handleCourseDialogClose} aria-labelledby="form-dialog-title">
-            <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Enter course name
-              </DialogContentText>
-              <TextField
-                  autoFocus
-                  margin="dense"
-                  id="course_name"
-                  label="review"
-                  type="text"
-                  onChange={handleNewCourseInputChange}
-                  fullWidth
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCourseDialogClose} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={handleNewCourseSubmit} color="primary">
-                Submit
-              </Button>
-            </DialogActions>
-          </Dialog>
-
-
-          <Dialog open={profDialogOpen} onClose={handleProfDialogClose} aria-labelledby="form-dialog-title">
-            <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Enter Professor name
-              </DialogContentText>
-              <TextField
-                  autoFocus
-                  margin="dense"
-                  id="prof_name"
-                  label="Name"
-                  type="text"
-                  onChange={handleNewProfInputChange}
-                  fullWidth
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleProfDialogClose} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={handleNewProfSubmit} color="primary">
-                Submit
-              </Button>
-            </DialogActions>
-          </Dialog>
-
-          <Dialog open={userBanDialogOpen} onClose={handleUserBanDialogClose} aria-labelledby="form-dialog-title">
-            <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                For how many days you want to ban user
-              </DialogContentText>
-              <TextField
-                  autoFocus
-                  margin="dense"
-                  id="ban_time"
-                  label="Name"
-                  type="number"
-                  defaultValue={7}
-                  onChange={handleNewUserBanInputChange}
-                  fullWidth
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleUserBanDialogClose} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={handleNewUserBanSubmit} color="primary">
-                Submit
-              </Button>
-            </DialogActions>
-          </Dialog>
+            <br/>
+            <br/>
+            <br/>
 
 
-        </div>
+            <Dialog open={courseDialogOpen} onClose={handleCourseDialogClose} aria-labelledby="form-dialog-title">
+              <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Enter course name
+                </DialogContentText>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="course_name"
+                    label="review"
+                    type="text"
+                    onChange={handleNewCourseInputChange}
+                    fullWidth
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCourseDialogClose} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={handleNewCourseSubmit} color="primary">
+                  Submit
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+
+            <Dialog open={profDialogOpen} onClose={handleProfDialogClose} aria-labelledby="form-dialog-title">
+              <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Enter Professor name
+                </DialogContentText>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="prof_name"
+                    label="Name"
+                    type="text"
+                    onChange={handleNewProfInputChange}
+                    fullWidth
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleProfDialogClose} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={handleNewProfSubmit} color="primary">
+                  Submit
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+            <Dialog open={userBanDialogOpen} onClose={handleUserBanDialogClose} aria-labelledby="form-dialog-title">
+              <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  For how many days you want to ban user
+                </DialogContentText>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="ban_time"
+                    label="Name"
+                    type="number"
+                    defaultValue={7}
+                    onChange={handleNewUserBanInputChange}
+                    fullWidth
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleUserBanDialogClose} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={handleNewUserBanSubmit} color="primary">
+                  Submit
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+
+          </div>:<div>
+            <button onClick={signIn}>Sign In </button>
+          </div>
+      }
+      </div>
 
   )
 

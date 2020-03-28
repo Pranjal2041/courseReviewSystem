@@ -3,11 +3,21 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import {createBrowserHistory} from "history";
+import {Route, Router, Switch} from "react-router-dom";
+import Callback from "./Callback";
+
+var hist = createBrowserHistory();
+
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+    <Router history={hist}>
+        <Switch>
+            <Route exact path='/callback' component={Callback} />
+            <Route path="/" component={App} />
+
+        </Switch>
+    </Router>,
   document.getElementById('root')
 );
 

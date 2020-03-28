@@ -11,6 +11,8 @@ import AppContext from "./utils/context";
 import testVar from "./utils/testVar";
 import Store, {Context} from "./store";
 import Reducer from "./reducer";
+import getUserId from "./serverConnection/getUserId";
+import {Link} from "react-router-dom";
 
 
 
@@ -27,6 +29,10 @@ function App() {
      const [profs,setProfs]= useState([""]);
      const [profSelected,changeProfSelected] = useState("");
     const [state,dispatch]=useReducer(Reducer);
+
+    let my_uid=-1;
+    let user_name='';
+    let isAuth=false;
 
 
 
@@ -97,16 +103,30 @@ function App() {
     useEffect(() => {
             getCourses();
             getProfList();
+            localStorage.setItem("isAuth",auth0Client.isAuthenticated());
+
             if(auth0Client.isAuthenticated())
             {
+                localStorage.setItem("user_name",auth0Client.getProfile().nickname);
                 const callback = result => {
                     console.log("I am checking if user ever existed in my database");
                     if(!result[0].exists){
                         addUser({name: auth0Client.getProfile().nickname})
                     }
-                        // dispatch({type: "UPDATE", payload: auth0Client.getProfile().nickname})
+
+                    const callback2 = result => {
+                        console.log("I am checking if user ever existed in my database");
+                        localStorage.setItem("user_id",result[0].uid)
+                    };
+
+                    getUserId(callback2,auth0Client.getProfile().nickname)
+
                 };
                 checkIfUserNameExists(callback,auth0Client.getProfile().nickname)
+            }
+            else {
+                localStorage.setItem("user_name",'');
+                localStorage.setItem("user_id",-1);
             }
 
     }, []);
@@ -128,6 +148,7 @@ function App() {
         <Store>
         <div>
 
+
             <Autocomplete
                 id="combo-box-demo"
                 options={courses.sort()}
@@ -139,7 +160,9 @@ function App() {
             />
             {
                 courses.includes(courseSelected)?
-                <a href={"/courses/"+courseSelected}>Submit</a>
+                <Link to={{pathname: "/courses/"+courseSelected,
+                authProps: {uid: my_uid,user_name: user_name,isAuth:isAuth}}}
+                >Submit</Link>
                     :null
             }
 
@@ -158,7 +181,7 @@ function App() {
             />
             {
                 profs.includes(profSelected)?
-                    <a href={"/professors/"+profSelected}>Submit</a>
+                    <Link to={"/professors/"+profSelected}>Submit</Link>
                     :null
             }
 

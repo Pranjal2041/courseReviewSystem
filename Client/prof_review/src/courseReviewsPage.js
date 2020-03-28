@@ -54,6 +54,10 @@ function CourseReviewsPage(props) {
     const [anonymousPublishing,setAnonymousPublishing]= useState(false);
     const [bannedTime,setBannedTime] = useState(true);
 
+    const [my_uid,setMy_uid]= useState(-1);
+    const [my_username,setMyUserName] =useState("");
+    const [isAuth,setIsAuth] =useState(false);
+
 
     const [overallReview,setOverAllReview] =useState(0);
     const [overallLevel,setOverallLevel] = useState([0,0,0,0]);
@@ -134,12 +138,9 @@ function CourseReviewsPage(props) {
         return flag
     }
 
-    const context = useContext(AppContext);
 
 
     const {title} = props.match.params;
-    const my_uid =1;
-    const my_username=context.name;
 
     function getMyBannedTime(uid){
         const callback = result =>{
@@ -161,6 +162,10 @@ function CourseReviewsPage(props) {
 
 
     useEffect(() => {
+
+        setMy_uid(parseInt(localStorage.getItem("user_id")));
+        setMyUserName(localStorage.getItem("user_name"));
+        setIsAuth(localStorage.getItem("isAuth")==='true');
         openCourse(title);
         getProfList();
         getMyBannedTime(my_uid);
@@ -172,6 +177,12 @@ function CourseReviewsPage(props) {
             alert("You have been banned by the administrator");
             return;
         }
+
+        if(!isAuth){
+            alert("Please login to continue");
+            return;
+        }
+
         setDialogOpen(true);
     };
 
@@ -185,6 +196,10 @@ function CourseReviewsPage(props) {
         if(!bannedTime)
         {
             alert("You have been banned by the administrator");
+            return;
+        }
+        if(!isAuth){
+            alert("Please login to continue");
             return;
         }
         const data={rid: msg.rid};
@@ -214,6 +229,8 @@ function CourseReviewsPage(props) {
     }
 
     const handleSubmit = (event) => {
+
+
 
         console.log("So we are adding review");
         let anonymous=0;

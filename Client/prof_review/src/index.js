@@ -13,10 +13,14 @@ import Callback from "./Callback";
 
 var hist = createBrowserHistory();
 
+window.$user_name = ''; //global variable
+window.$user_id = -1;
+window.$isAuthenticated = false;
+
 ReactDOM.render(
     <Router history={hist}>
         <Switch>
-            <Route path="/courses/:title" component={CourseReviewsPage} />
+            <Route path="/courses/:title"   component={CourseReviewsPage}/>
             <Route path="/professors/:title" component={ProfReviewPage} />
             <Route exact path='/callback' component={Callback} />
             <Route path="/" component={App} />

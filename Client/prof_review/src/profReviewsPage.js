@@ -50,6 +50,11 @@ function ProfReviewsPage(props) {
     const [overallLevel,setOverallLevel] = useState([0,0,0,0]);
 
 
+    const [my_uid,setMy_uid]= useState(-1);
+    const [my_username,setMyUserName] =useState("");
+    const [isAuth,setIsAuth] =useState(false);
+
+
 
     function getCourses() {
         const callback = result => {
@@ -127,8 +132,6 @@ function ProfReviewsPage(props) {
 
 
     const {title} = props.match.params;
-    const my_uid =2;
-    const my_username="Invincible";
 
 
     function getMyBannedTime(uid){
@@ -150,6 +153,11 @@ function ProfReviewsPage(props) {
     }
 
     useEffect(() => {
+
+        setMy_uid(parseInt(localStorage.getItem("user_id")));
+        setMyUserName(localStorage.getItem("user_name"));
+        setIsAuth(localStorage.getItem("isAuth")==='true');
+
         openProf(title);
         getCourses();
         getMyBannedTime(my_uid)
@@ -159,6 +167,10 @@ function ProfReviewsPage(props) {
         if(!bannedTime)
         {
             alert("You have been banned by the administrator");
+            return;
+        }
+        if(!isAuth){
+            alert("Please login to continue");
             return;
         }
         setDialogOpen(true);
@@ -174,6 +186,10 @@ function ProfReviewsPage(props) {
         if(!bannedTime)
         {
             alert("You have been banned by the administrator");
+            return;
+        }
+        if(!isAuth){
+            alert("Please login to continue");
             return;
         }
         const data={rid: msg.rid};

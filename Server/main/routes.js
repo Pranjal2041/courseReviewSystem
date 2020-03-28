@@ -47,6 +47,13 @@ router.get('/api/get/checkUserName', (req, res, next ) => {
         })
 });
 
+router.get('/api/get/userID', (req, res, next ) => {
+    pool.query(`SELECT uid FROM users WHERE name= $1`,[req.query.name],
+        (q_err, q_res) => {
+            console.log(q_res);
+            res.json(q_res.rows)
+        })
+});
 router.get('/api/get/courseList', (req, res, next ) => {
     pool.query(`SELECT * FROM course_names`,
         (q_err, q_res) => {

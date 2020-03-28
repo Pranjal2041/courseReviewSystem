@@ -27,6 +27,7 @@ import getAllCourses from "./serverConnection/getData";
 import getReviewsOfProf from "./serverConnection/getProfReview";
 import ProfReviewItem from "./components/profReviewItem";
 import axios from "axios";
+import YourProfReviewItem from "./components/YourProfReviewItem";
 
 
 function ProfReviewsPage(props) {
@@ -44,6 +45,10 @@ function ProfReviewsPage(props) {
     const [courseList,setCourseList] = useState([""]);
     const [courseSelected,setCourseSelected] = useState([""]);
     const [bannedTime,setBannedTime] =useState(true);
+
+    const [overallReview,setOverAllReview] =useState(0);
+    const [overallLevel,setOverallLevel] = useState([0,0,0,0]);
+
 
 
     function getCourses() {
@@ -66,7 +71,18 @@ function ProfReviewsPage(props) {
             console.log(result[0]);
             changeState(result);
             if(result!=null) {
+                let totalRat=0;
+                let n=0;
+                let totalLev=[0,0,0,0];
+                let nLev=[0,0,0,0];
                 result.map(message => {
+                    totalRat+=message.rating;
+                    n++;
+                    for (let i=0;i<4;i++) {
+                        if (message.level[i] !== 0 && message.level[i]!==undefined)
+                        {   totalLev[i] += message.level[i];
+                            nLev[i] = nLev[i] + 1;}
+                    }
                     if (message.uid === my_uid) {
 
                         setValues({review: message.review, rating: message.rating,likes:message.likes});
@@ -79,6 +95,14 @@ function ProfReviewsPage(props) {
                         setRid(message.rid)
                     }
                 });
+                if(n!==0)
+                    setOverAllReview(totalRat/n);
+                for(let i=0;i<4;i++){
+                    if(nLev[i]!==0)
+                        totalLev[i]=totalLev[i]/nLev[i]
+                }
+
+                setOverallLevel(totalLev);
             }
 
         };
@@ -103,7 +127,7 @@ function ProfReviewsPage(props) {
 
 
     const {title} = props.match.params;
-    const my_uid =1;
+    const my_uid =2;
     const my_username="Invincible";
 
 
@@ -228,13 +252,24 @@ function ProfReviewsPage(props) {
                 <div>
                     <h1> {"Showing all reviews of professor " + title} </h1>
 
+
+
+                    <h4>{"Overall Rating:- "+overallReview}</h4>
+                    <h3>{"Difficulty:- "+overallLevel[0]}</h3>
+                    <h3>{"Speed:- "+overallLevel[1]}</h3>
+                    <h3>{"Value:- "+overallLevel[2]}</h3>
+                    <h3>{"Average Rating of course taken by prof:- "+overallLevel[3]}</h3>
+
+
+
+
                     <Table>
                         <TableBody>
                             {
                             }{
                                     checkIfReviewExists()
                                     ? state.map( message => (message.uid===my_uid )?
-                                     <div> <YourReviewItem level={message.level} prof={message.course_names} author={message.uid} review={message.review} rating={message.rating} likes={message.likes}
+                                     <div> <YourProfReviewItem level={message.level} prof={message.course_names} author={message.uid} review={message.review} rating={message.rating} likes={message.likes}
                                      /> <button onClick={handleClickOpen}> Edit your review </button> <br/><br/></div>
                                      :null
                                     )

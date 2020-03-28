@@ -54,6 +54,10 @@ function CourseReviewsPage(props) {
     const [anonymousPublishing,setAnonymousPublishing]= useState(false);
     const [bannedTime,setBannedTime] = useState(true);
 
+
+    const [overallReview,setOverAllReview] =useState(0);
+    const [overallLevel,setOverallLevel] = useState([0,0,0,0]);
+
     function getProfList() {
         const callback = result => {
             console.log("I am going to print the courses");
@@ -72,7 +76,20 @@ function CourseReviewsPage(props) {
             console.log(result[0]);
             changeState(result);
             if(result!=null) {
+                let totalRat=0;
+                let n=0;
+                let totalLev=[0,0,0,0];
+                let nLev=[0,0,0,0];
                 result.map(message => {
+
+                    totalRat+=message.rating;
+                    n++;
+                    for (let i=0;i<4;i++) {
+                        if (message.level[i] !== 0 && message.level[i]!==undefined)
+                        {   totalLev[i] += message.level[i];
+                        nLev[i] = nLev[i] + 1;}
+                    }
+
                     if (message.uid === my_uid) {
 
                         setValues({review: message.review, rating: message.rating,likes:message.likes});
@@ -85,6 +102,16 @@ function CourseReviewsPage(props) {
                         setRid(message.rid)
                     }
                 });
+                if(n!==0)
+                    setOverAllReview(totalRat/n);
+                for(let i=0;i<4;i++){
+                    if(nLev[i]!==0)
+                    totalLev[i]=totalLev[i]/nLev[i]
+                }
+
+                setOverallLevel(totalLev);
+
+
             }
 
         };
@@ -242,8 +269,14 @@ function CourseReviewsPage(props) {
 
             return (
                 <div>
-                    <button>{bannedTime?"True":"False"}</button>
                     <h1> {"Showing all reviews of course " + title} </h1>
+
+                    <h4>{"Overall Rating:- "+overallReview}</h4>
+                    <h3>{"Difficulty:- "+overallLevel[0]}</h3>
+                    <h3>{"Speed:- "+overallLevel[1]}</h3>
+                    <h3>{"Value:- "+overallLevel[2]}</h3>
+                    <h3>{"Average Rating of profs in course:- "+overallLevel[3]}</h3>
+
 
                     <Table>
                         <TableBody>

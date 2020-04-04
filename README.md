@@ -1,16 +1,26 @@
 # CourseReviewSystem
 
 ## How to Install
-
+* Before getting started make sure Postgresql is installed in your computer and configured.
+* Create a new user with the command:-  CREATE ROLE my_user WITH LOGIN PASSWORD 'root';
+         Use the same name and password as given in this command
+* once the role is created type:- CREATE DATABSE reviewdb;
+       to create the database.
+* Now connect to database using command:-  \c reviewdb;
+* Now go to /Server/main/schema.sql and copy the contents and paste it into the psql terminal.. All the tables will be created.
+* This way database setup will be complete.
 * Clone the repo in your computer or download and extract the zip
 * First install all the dependencies by:- npm install
 * Go to server folder and type the command:- npm run devstart
-* To start the client app go to clientFolder/profReviews/ and type:- npm start
-* Similarly for starting admin app go to admin folder and type:- npm start.
+* To start the client app go to clientFolder/profReviews/ and open new terminal and type:- npm start
+* Similarly for starting admin app go to admin folder and open new terminal and type:- npm start.(Run either of client and admin app at a time as they are both configured to run on same port)
+* Admin UserName:- admin
+  password:- Admin123
+* Professor page can be added by first logging as admin in admin app, and creating a new course/professor page.
 
 ## About this App
 
-This app bsically allows to rate and review professors and courses based on different criteria's and display the results for user's assesment. It primarily uses express,nodeJS,postgresql and react for various purposes. Also auth0 hsa been used for login and registration.
+This app basically allows to rate and review professors and courses based on different criteria's and display the results for user's assesment. It primarily uses express,nodeJS,postgresql and react for various purposes. Also auth0 hsa been used for login and registration.
 
 ## Features
   Currently the following features have been implemented

@@ -21,6 +21,17 @@ CREATE TABLE course_names (
     name VARCHAR(255) UNIQUE
 );
 
+CREATE TABLE users (
+    uid SERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    reputation INT,
+    bannedTime TIMESTAMP,
+    prof_review_ids INT[] DEFAULT ARRAY[]::INT[],
+    prof_like_ids INT[] DEFAULT ARRAY[]::INT[],
+    course_review_ids INT[] DEFAULT ARRAY[]::INT[],
+    course_like_ids INT[] DEFAULT ARRAY[]::INT[]
+);
+
 CREATE TABLE course_reviews (
     rid SERIAL PRIMARY KEY,
     cid INT REFERENCES course_names(cid),
@@ -28,12 +39,13 @@ CREATE TABLE course_reviews (
     review VARCHAR(255),
     rating FLOAT,
     likes INT,
-    like_user_ids
+    like_user_ids INT[] DEFAULT ARRAY[]::INT[],
     level FLOAT[] DEFAULT ARRAY[]::FLOAT[],
     date TIMESTAMP,
     name VARCHAR(255),
     user_name VARCHAR(255),
-    prof_names VARCHAR(255)
+    prof_names VARCHAR(255),
+	anony INT
 );
 
 CREATE TABLE professor_reviews (
@@ -48,16 +60,6 @@ CREATE TABLE professor_reviews (
     like_user_ids INT[] DEFAULT ARRAY[]::INT[],
     name VARCHAR(255),
     user_name VARCHAR(255),
-    course_names VARCHAR(255)
-);
-
-CREATE TABLE users (
-    uid SERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    reputation INT,
-    bannedTime TIMESTAMP,
-    prof_review_ids INT[] DEFAULT ARRAY[]::INT[],
-    prof_like_ids INT[] DEFAULT ARRAY[]::INT[],
-    course_review_ids INT[] DEFAULT ARRAY[]::INT[],
-    course_like_ids INT[] DEFAULT ARRAY[]::INT[]
+    course_names VARCHAR(255),
+	anony INT
 );
